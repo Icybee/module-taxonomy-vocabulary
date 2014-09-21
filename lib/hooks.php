@@ -12,154 +12,123 @@ use Brickrouge\Text;
 use Icybee\Modules\Views\ActiveRecordProvider;
 use Icybee\Modules\Views\Collection as ViewsCollection;
 use Icybee\Modules\Views\Provider;
+use Icybee\Modules\Nodes\Node;
 
 class Hooks
 {
-	static private $cache_vocabularies = array();
-	static private $cache_record_terms = array();
-	static private $cache_record_properties = array();
+	static private $vocabularies_cache;
 
 	static public function get_term(\ICanBoogie\Object\PropertyEvent $event, \Icybee\Modules\Nodes\Node $target)
 	{
 		global $core;
 
-		$property = $event->property;
-		$cache_record_properties_key = spl_object_hash($target) . '_' . $property;
-
-		if (isset(self::$cache_record_properties[$cache_record_properties_key]))
-		{
-			$event->value = self::$cache_record_properties[$cache_record_properties_key];
-			$event->stop();
-
-			return;
-		}
-
 		$constructor = $target->constructor;
-		$siteid = $target->siteid;
-		$nid = $target->nid;
 
-		$use_slug = false;
-		$vocabularyslug = $property;
-
-		if (substr($property, -4, 4) === 'slug')
+		if (isset(self::$vocabularies_cache[$constructor]))
 		{
-			$use_slug = true;
-			$vocabularyslug = substr($property, 0, -4);
-		}
+			$vocabularies = self::$vocabularies_cache[$constructor];
 
-		$cache_key = $siteid . '>' . $constructor . '>' . $vocabularyslug;
-		$cache_record_terms_key = $cache_key . '>' . $nid;
-
-		if (!isset(self::$cache_record_terms[$cache_record_terms_key]))
-		{
-			#
-			# vocabulary for this constructor on this website
-			#
-
-			if (!isset(self::$cache_vocabularies[$cache_key]))
-			{
-				self::$cache_vocabularies[$cache_key] = $core->models['taxonomy.vocabulary']
-				->joins(':taxonomy.vocabulary/scopes')
-				->where('siteid = 0 OR siteid = ?', $target->siteid)
-				->filter_by_constructor((string) $constructor)
-				->filter_by_vocabularyslug($vocabularyslug)
-				->order('siteid DESC')
-				->one;
-			}
-
-			$vocabulary = self::$cache_vocabularies[$cache_key];
-
-			if (!$vocabulary)
+			if ($vocabularies === false)
 			{
 				return;
 			}
-
-			if ($vocabulary->is_required)
-			{
-				$event->value = 'uncategorized';
-			}
-
-			$terms = $vocabulary->terms;
-			$rc = null;
-
-			if ($vocabulary->is_multiple || $vocabulary->is_tags)
-			{
-				foreach ($terms as $term)
-				{
-					if (empty($term->nodes_keys[$nid]))
-					{
-						continue;
-					}
-
-					$rc[] = $term;
-				}
-			}
-			else
-			{
-				foreach ($terms as $term)
-				{
-					if (empty($term->nodes_keys[$nid]))
-					{
-						continue;
-					}
-
-					$rc = $term;
-
-					break;
-				}
-			}
-
-			self::$cache_record_terms[$cache_record_terms_key] = $rc === null ? false : $rc;
+		}
+		else
+		{
+			self::$vocabularies_cache[$constructor] = $vocabularies = $core
+			->models['taxonomy.vocabulary']
+			->join(':taxonomy.vocabulary/scopes')
+			->where('siteid = 0 OR siteid = ?', $target->siteid)
+			->filter_by_constructor((string) $constructor)
+			->order('siteid DESC')
+			->all;
 		}
 
-		$rc = self::$cache_record_terms[$cache_record_terms_key];
-
-		if ($rc === false)
+		if (!$vocabularies)
 		{
 			return;
 		}
 
-		if ($use_slug)
-		{
-			if (is_array($rc))
-			{
-				$terms = $rc;
-				$rc = array();
+		/* @var $vocabulary Vocabulary */
 
-				foreach ($terms as $term)
-				{
-					$rc[] = $term->termslug;
-				}
-			}
-			else
+		$vocabulary = null;
+		$property = $event->property;
+
+		foreach ($vocabularies as $v)
+		{
+			if ($property != $v->vocabularyslug)
 			{
-				$rc = $rc->termslug;
+				continue;
 			}
+
+			$vocabulary = $v;
+
+			break;
 		}
 
-		self::$cache_record_properties[$cache_record_properties_key] = $rc;
-
-		/*
-		$cache = &self::$cache_record_properties;
-
 		#
-		# now that we have the value for the property we can set a prototype method to provide the
-		# value without the events overhead.
+		# The property doesn't match the slug of any vocabulary associated with the record type.
 		#
-
-		$target->prototype['get_' . $property] = function(\Icybee\Modules\Nodes\Node $target) use($property, &$cache)
+		if (!$vocabulary)
 		{
-			$cache_record_properties_key = spl_object_hash($target) . '_' . $property;
+			return;
+		}
 
-			var_dump($cache);
+		$prototype = $target->prototype;
+		$getters = [];
 
-			return $cache[$cache_record_properties_key];
-		};
-		*/
+		foreach ($vocabularies as $vocabulary)
+		{
+			$slug = $vocabulary->to_slug();
 
-		$target->$property = $rc;
+			$prototype["lazy_get_$slug"] = $getters[$slug] = function(Node $node) use($vocabulary) {
 
-		$event->value = $rc;
+				global $core;
+				static $vtid_by_nid;
+
+				$model = $core->models['taxonomy.terms'];
+
+				if (!$vtid_by_nid)
+				{
+					$vtid_by_nid = $model
+					->select('nid, vtid')
+					->join(':taxonomy.terms/nodes')
+					->filter_by_vid($vocabulary->vid)
+					->all(\PDO::FETCH_GROUP | \PDO::FETCH_COLUMN);
+
+					#
+					# Warming up ActiveRecord's cache with terms.
+					#
+
+					$vtids = [];
+
+					foreach ($vtid_by_nid as $v)
+					{
+						$vtids = array_merge($vtids, $v);
+					}
+
+					$vtids = array_unique($vtids);
+
+					$model->find($vtids);
+				}
+
+				$nid = $node->nid;
+
+				if (empty($vtid_by_nid[$nid]))
+				{
+					// TODO-20140921: is_required => create a fake "uncategorized" instance
+
+					return;
+				}
+
+				$terms = $model->find($vtid_by_nid[$nid]);
+
+				return ($vocabulary->is_multiple || $vocabulary->is_tags) ? $terms :current($terms);
+
+			};
+		}
+
+		$event->value = $getters[$property]($target);
 		$event->stop();
 	}
 
@@ -375,6 +344,7 @@ class Hooks
 		}
 	}
 
+	/*
 	static public function on_collect_views(ViewsCollection\CollectEvent $event, ViewsCollection $target)
 	{
 		global $core;
@@ -543,7 +513,7 @@ class Hooks
 				trigger_error(\ICanBoogie\format('Expected instance of <q>Icybee\Modules\Nodes\Node</q> given: \1', array($record)));
 
 				var_dump($event); exit;
-				*/
+				* /
 
 				continue;
 			}
@@ -586,7 +556,7 @@ class Hooks
 		}
 
 		$event->result = $result;
-		*/
+		* /
 
 		$ids_by_vtid = $core->models['taxonomy.terms/nodes']
 		->joins(':nodes')
@@ -623,8 +593,9 @@ class Hooks
 				var_dump(func_get_args());
 			}
 		);
-		*/
+		* /
 	}
+	*/
 
 	static public function before_breadcrumb_render_inner_html(\Icybee\Modules\Pages\BreadcrumbElement\BeforeRenderInnerHTMLEvent $event, \Icybee\Modules\Pages\BreadcrumbElement $target)
 	{
