@@ -12,8 +12,9 @@
 namespace Icybee\Modules\Taxonomy\Vocabulary;
 
 use ICanBoogie\ActiveRecord;
+use ICanBoogie\Routing\ToSlug;
 
-class Vocabulary extends ActiveRecord
+class Vocabulary extends ActiveRecord implements ToSlug
 {
 	const VID = 'vid';
 	const SITEID = 'siteid';
@@ -97,6 +98,11 @@ class Vocabulary extends ActiveRecord
 		unset($properties['terms']);
 
 		return array_flip($properties);
+	}
+
+	public function to_slug()
+	{
+		return $this->vocabularyslug;
 	}
 
 	/**
