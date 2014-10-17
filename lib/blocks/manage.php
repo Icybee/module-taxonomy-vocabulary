@@ -32,7 +32,7 @@ class ManageBlock extends \Icybee\ManageBlock
 namespace Icybee\Modules\Taxonomy\Vocabulary\ManageBlock;
 
 use ICanBoogie\I18n;
-use ICanBoogie\Module;
+use ICanBoogie\Module\Descriptor;
 
 use Icybee\ManageBlock\Column;
 use Icybee\ManageBlock\EditDecorator;
@@ -105,7 +105,7 @@ class ScopeColumn extends Column
 
 			foreach ($scope as &$constructor)
 			{
-				$constructor = '<a href="' . $context . '/admin/' . $constructor . '">' . I18n\t($core->modules->descriptors[$constructor][Module::T_TITLE]) . '</a>';
+				$constructor = '<a href="' . $context . '/admin/' . $constructor . '">' . I18n\t($core->modules->descriptors[$constructor][Descriptor::TITLE]) . '</a>';
 			}
 
 			$last = array_pop($scope);

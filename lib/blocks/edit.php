@@ -12,6 +12,7 @@
 namespace Icybee\Modules\Taxonomy\Vocabulary;
 
 use ICanBoogie\I18n;
+use ICanBoogie\Module\Descriptor;
 
 use Brickrouge\Element;
 use Brickrouge\Form;
@@ -124,7 +125,7 @@ class EditBlock extends \Icybee\EditBlock
 				continue;
 			}
 
-			$scope_options[$module_id] = I18n\t($module_id, array(), array('scpope' => 'module_title', 'default' => $descriptor[Module::T_TITLE]));
+			$scope_options[$module_id] = I18n\t($module_id, array(), array('scpope' => 'module_title', 'default' => $descriptor[Descriptor::TITLE]));
 		}
 
 		uasort($scope_options, 'ICanBoogie\unaccent_compare_ci');
