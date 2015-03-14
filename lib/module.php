@@ -20,14 +20,13 @@ class Module extends \Icybee\Module
 
 	protected function block_order($vid)
 	{
-		global $core;
-
-		$document = $core->document;
+		$app = $this->app;
+		$document = $app->document;
 
 		$document->js->add(DIR . 'public/order.js');
 		$document->css->add(DIR . 'public/order.css');
 
-		$terms = $core->models['taxonomy.terms']->filter_by_vid($vid)->order('term.weight, vtid')->all;
+		$terms = $app->models['taxonomy.terms']->filter_by_vid($vid)->order('term.weight, vtid')->all;
 
 		$rc  = '<form id="taxonomy-order" method="post">';
 		$rc .= '<input type="hidden" name="' . Operation::NAME . '" value="' . self::OPERATION_ORDER . '" />';

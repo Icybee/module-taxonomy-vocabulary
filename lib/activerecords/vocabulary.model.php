@@ -79,9 +79,7 @@ class Model extends \ICanBoogie\ActiveRecord\Model
 	{
 		// TODO: use model delete() method instead, maybe put an event on 'taxonomy.vocabulary.delete'
 
-		global $core;
-
-		$model = $core->models['taxonomy.terms'];
+		$model = $this->models['taxonomy.terms'];
 		$model->execute('DELETE FROM {self}__nodes WHERE (SELECT vid FROM {self} WHERE {self}__nodes.vtid = {self}.vtid) = ?', array($vid));
 		$model->execute('DELETE FROM {self} WHERE vid = ?', array($vid));
 	}

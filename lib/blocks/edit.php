@@ -106,10 +106,8 @@ class EditBlock extends \Icybee\EditBlock
 
 	protected function get_control__scope()
 	{
-		global $core;
-
 		$scope_options = array();
-		$modules = $core->modules;
+		$modules = $this->app->modules;
 
 		foreach ($modules->descriptors as $module_id => $descriptor)
 		{
@@ -156,9 +154,9 @@ class EditBlock extends \Icybee\EditBlock
 
 	protected function get_control__site()
 	{
-		global $core;
+		$app = $this->app;
 
-		if (!$core->user->has_permission(\Icybee\Modules\Nodes\Module::PERMISSION_MODIFY_BELONGING_SITE))
+		if (!$app->user->has_permission(\Icybee\Modules\Nodes\Module::PERMISSION_MODIFY_BELONGING_SITE))
 		{
 			return;
 		}
@@ -174,9 +172,9 @@ class EditBlock extends \Icybee\EditBlock
 				(
 					null => ''
 				)
-				+ $core->models['sites']->select('siteid, IF(admin_title != "", admin_title, concat(title, ":", language))')->order('admin_title, title')->pairs,
+				+ $app->models['sites']->select('siteid, IF(admin_title != "", admin_title, concat(title, ":", language))')->order('admin_title, title')->pairs,
 
-				Element::DEFAULT_VALUE => $core->site_id,
+				Element::DEFAULT_VALUE => $app->site_id,
 				Element::GROUP => 'admin',
 				Element::DESCRIPTION => 'siteid'
 			)

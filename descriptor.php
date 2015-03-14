@@ -13,7 +13,7 @@ return array
 	(
 		'primary' => array
 		(
-			Model::T_SCHEMA => array
+			Model::SCHEMA => array
 			(
 				'fields' => array
 				(
@@ -39,7 +39,7 @@ return array
 		(
 			Model::ACTIVERECORD_CLASS => 'ICanBoogie\ActiveRecord',
 			Model::CLASSNAME => 'ICanBoogie\ActiveRecord\Model',
-			Model::T_SCHEMA => array
+			Model::SCHEMA => array
 			(
 				'fields' => array
 				(

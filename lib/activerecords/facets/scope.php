@@ -12,7 +12,7 @@
 namespace Icybee\Modules\Taxonomy\Vocabulary;
 
 use ICanBoogie\ActiveRecord;
-use ICanBoogie\ActiveRecord\Criterion;
+use ICanBoogie\Facets\Criterion;
 use ICanBoogie\ActiveRecord\Query;
 
 class ScopeCriterion extends Criterion

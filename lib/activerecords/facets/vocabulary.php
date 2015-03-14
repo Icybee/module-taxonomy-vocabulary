@@ -11,7 +11,7 @@
 
 namespace Icybee\Modules\Taxonomy\Vocabulary;
 
-use ICanBoogie\ActiveRecord\Criterion;
+use ICanBoogie\Facets\Criterion;
 use ICanBoogie\ActiveRecord\Query;
 
 class VocabularyCriterion extends Criterion

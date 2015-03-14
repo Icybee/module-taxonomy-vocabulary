@@ -17,8 +17,6 @@ class SaveOperation extends \ICanBoogie\SaveOperation
 {
 	protected function lazy_get_properties()
 	{
-		global $core;
-
 		$request = $this->request;
 		$properties = parent::lazy_get_properties();
 
@@ -27,9 +25,11 @@ class SaveOperation extends \ICanBoogie\SaveOperation
 			$properties['scope'] = $request['scope'];
 		}
 
-		if (!$this->key || !$core->user->has_permission(\Icybee\Modules\Nodes\Module::PERMISSION_MODIFY_BELONGING_SITE))
+		$app = $this->app;
+
+		if (!$this->key || !$app->user->has_permission(\Icybee\Modules\Nodes\Module::PERMISSION_MODIFY_BELONGING_SITE))
 		{
-			$properties['siteid'] = $core->site_id;
+			$properties['siteid'] = $app->site_id;
 		}
 
 		return $properties;

@@ -113,9 +113,7 @@ class Vocabulary extends ActiveRecord implements ToSlug
 	 */
 	protected function lazy_get_scope()
 	{
-		global $core;
-
-		return $core->models['taxonomy.vocabulary/scopes']->select('constructor')
+		return $this->model->models['taxonomy.vocabulary/scopes']->select('constructor')
 		->filter_by_vid($this->vid)->all(\PDO::FETCH_COLUMN);
 	}
 
@@ -126,9 +124,7 @@ class Vocabulary extends ActiveRecord implements ToSlug
 	 */
 	protected function lazy_get_terms()
 	{
-		global $core;
-
-		$model = $core->models['taxonomy.terms'];
+		$model = $this->model->models['taxonomy.terms'];
 
 		return $model->select('term.*')->filter_by_vid($this->vid)
 		->order('weight')->all(\PDO::FETCH_CLASS, 'Icybee\Modules\Taxonomy\Terms\Term', array($model));

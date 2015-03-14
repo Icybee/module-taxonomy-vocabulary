@@ -32,11 +32,9 @@ class OrderOperation extends Operation
 
 	protected function process()
 	{
-		global $core;
-
 		$w = 0;
 		$weights = array();
-		$update = $core->models['taxonomy.terms']->prepare('UPDATE {self} SET weight = ? WHERE vtid = ?');
+		$update = $this->app->models['taxonomy.terms']->prepare('UPDATE {self} SET weight = ? WHERE vtid = ?');
 
 		foreach ($this->request['terms'] as $vtid => $dummy)
 		{

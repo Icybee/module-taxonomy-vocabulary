@@ -44,10 +44,8 @@ class VocabularyColumn extends Column
 {
 	public function render_cell($record)
 	{
-		global $core;
-
 		$vid = $record->vid;
-		$terms = $core->models['taxonomy.terms']
+		$terms = \ICanBoogie\app()->models['taxonomy.terms']
 		->select('term')
 		->filter_by_vid($vid)
 		->order('term.weight, term')
@@ -92,7 +90,7 @@ class ScopeColumn extends Column
 {
 	public function render_cell($record)
 	{
-		global $core;
+		$app = \ICanBoogie\app();
 
 		$scope = $this->manager->module->model('scopes')
 		->select('constructor')
@@ -101,11 +99,11 @@ class ScopeColumn extends Column
 
 		if ($scope)
 		{
-			$context = $core->site->path;
-
+			$context = $app->site->path;
+			// TODO-20150310: use a route
 			foreach ($scope as &$constructor)
 			{
-				$constructor = '<a href="' . $context . '/admin/' . $constructor . '">' . I18n\t($core->modules->descriptors[$constructor][Descriptor::TITLE]) . '</a>';
+				$constructor = '<a href="' . $context . '/admin/' . $constructor . '">' . I18n\t($app->modules->descriptors[$constructor][Descriptor::TITLE]) . '</a>';
 			}
 
 			$last = array_pop($scope);

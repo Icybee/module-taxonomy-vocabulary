@@ -18,11 +18,11 @@ class Hooks
 {
 	static private $vocabularies_cache;
 
-	static public function get_term(\ICanBoogie\Object\PropertyEvent $event, \Icybee\Modules\Nodes\Node $target)
+//	static public function get_term(\ICanBoogie\Object\PropertyEvent $event, \Icybee\Modules\Nodes\Node $target)
+	static public function get_term(\Icybee\Modules\Nodes\Node $target, $property)
 	{
-		global $core;
-
 		$constructor = $target->constructor;
+		$models = $target->model->models;
 
 		if (isset(self::$vocabularies_cache[$constructor]))
 		{
@@ -35,8 +35,7 @@ class Hooks
 		}
 		else
 		{
-			self::$vocabularies_cache[$constructor] = $vocabularies = $core
-			->models['taxonomy.vocabulary']
+			self::$vocabularies_cache[$constructor] = $vocabularies = $models['taxonomy.vocabulary']
 			->join(':taxonomy.vocabulary/scopes')
 			->where('siteid = 0 OR siteid = ?', $target->siteid)
 			->filter_by_constructor((string) $constructor)
@@ -52,7 +51,6 @@ class Hooks
 		/* @var $vocabulary Vocabulary */
 
 		$vocabulary = null;
-		$property = $event->property;
 
 		foreach ($vocabularies as $v)
 		{
@@ -75,22 +73,20 @@ class Hooks
 		}
 
 		$prototype = $target->prototype;
+		$terms_model = $models['taxonomy.terms'];
 		$getters = [];
 
 		foreach ($vocabularies as $vocabulary)
 		{
 			$slug = $vocabulary->to_slug();
 
-			$prototype["lazy_get_$slug"] = $getters[$slug] = function(Node $node) use($vocabulary) {
+			$prototype["lazy_get_$slug"] = $getters[$slug] = function(Node $node) use($terms_model, $vocabulary) {
 
-				global $core;
 				static $vtid_by_nid;
-
-				$model = $core->models['taxonomy.terms'];
 
 				if (!$vtid_by_nid)
 				{
-					$vtid_by_nid = $model
+					$vtid_by_nid = $terms_model
 					->select('nid, vtid')
 					->join(':taxonomy.terms/nodes')
 					->filter_by_vid($vocabulary->vid)
@@ -109,7 +105,7 @@ class Hooks
 
 					$vtids = array_unique($vtids);
 
-					$model->find($vtids);
+					$terms_model->find($vtids);
 				}
 
 				$nid = $node->nid;
@@ -121,37 +117,36 @@ class Hooks
 					return;
 				}
 
-				$terms = $model->find($vtid_by_nid[$nid]);
+				$terms = $terms_model->find($vtid_by_nid[$nid]);
 
-				return ($vocabulary->is_multiple || $vocabulary->is_tags) ? $terms :current($terms);
+				return ($vocabulary->is_multiple || $vocabulary->is_tags) ? $terms : reset($terms);
 
 			};
 		}
 
-		$event->value = $getters[$property]($target);
-		$event->stop();
+		return $getters[$property]($target);
 	}
 
 	static public function on_nodes_editblock_alter_children(Event $event, \Icybee\Modules\Nodes\EditBlock $block)
 	{
-		global $core;
+		$app = \ICanBoogie\app();
 
-		$document = $core->document;
+		$document = $app->document;
 
 		$document->css->add(DIR . 'public/support.css');
 		$document->js->add(DIR . 'public/support.js');
 
-		$vocabularies = $core->models['taxonomy.vocabulary']
-		->joins('INNER JOIN {self}__scopes USING(vid)')
-		->where('constructor = ? AND (siteid = 0 OR siteid = ?)', (string) $event->module, $core->site_id)
+		$vocabularies = $app->models['taxonomy.vocabulary']
+		->join('INNER JOIN {self}__scopes USING(vid)')
+		->where('constructor = ? AND (siteid = 0 OR siteid = ?)', (string) $event->module, $app->site_id)
 		->order('weight')
 		->all;
 
 		// TODO-20101104: use Brickrouge\Form::VALUES instead of setting the 'values' of the elements.
 		// -> because 'properties' are ignored, and that's bad.
 
-		$terms_model = $core->models['taxonomy.terms'];
-		$nodes_model = $core->models['taxonomy.terms/nodes'];
+		$terms_model = $app->models['taxonomy.terms'];
+		$nodes_model = $app->models['taxonomy.terms/nodes'];
 
 		$nid = $event->key;
 		$identifier_base = 'vocabulary[vid]';
@@ -166,7 +161,7 @@ class Hooks
 			if ($vocabulary->is_multiple)
 			{
 				$options = $terms_model->select('term, count(nid)')
-				->joins('inner join {self}__nodes using(vtid)')
+				->join('inner join {self}__nodes using(vtid)')
 				->filter_by_vid($vid)
 				->group('term')->order('term')->pairs;
 
@@ -223,8 +218,7 @@ class Hooks
 
 				$value = $nodes_model->select('term_node.vtid')->filter_by_vid_and_nid($vid, $nid)->order('term')->rc;
 
-				$edit_url = $core->site->path . '/admin/taxonomy.vocabulary/' . $vocabulary->vid . '/edit';
-
+				$edit_url = $app->site->path . '/admin/taxonomy.vocabulary/' . $vocabulary->vid . '/edit';
 				$children[$identifier] = new Element
 				(
 					'select', array
@@ -253,7 +247,7 @@ class Hooks
 
 	static public function on_node_save(\ICanBoogie\Operation\ProcessEvent $event, \Icybee\Modules\Nodes\SaveOperation $target)
 	{
-		global $core;
+		$app = \ICanBoogie\app();
 
 		$name = 'vocabulary';
 		$request = $event->request;
@@ -271,9 +265,9 @@ class Hooks
 		# on supprime toutes les liaisons pour cette node
 		#
 
-		$vocabulary_model = $core->models['taxonomy.vocabulary'];
-		$terms_model = $core->models['taxonomy.terms'];
-		$nodes_model = $core->models['taxonomy.terms/nodes'];
+		$vocabulary_model = $app->models['taxonomy.vocabulary'];
+		$terms_model = $app->models['taxonomy.terms'];
+		$nodes_model = $app->models['taxonomy.terms/nodes'];
 
 		$nodes_model->where('nid = ?', $nid)->delete();
 
@@ -532,7 +526,7 @@ class Hooks
 
 		/*
 		$ids_by_names = $core->models['taxonomy.terms/nodes']
-		->joins(':nodes')
+		->join(':nodes')
 		->select('term, nid')
 		->order('term.weight, term.term')
 		->where('vid = ? AND nid IN(' . $ids . ')', $vocabulary->vid)
@@ -559,7 +553,7 @@ class Hooks
 		* /
 
 		$ids_by_vtid = $core->models['taxonomy.terms/nodes']
-		->joins(':nodes')
+		->join(':nodes')
 		->select('vtid, nid')
 		->order('term.weight, term.term')
 		->where('vid = ? AND nid IN(' . $ids . ')', $vocabulary->vid)
