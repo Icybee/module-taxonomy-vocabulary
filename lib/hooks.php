@@ -9,6 +9,7 @@ use Brickrouge\Element;
 use Brickrouge\Form;
 use Brickrouge\Text;
 
+use Icybee\Modules\Pages\BreadcrumbElement;
 use Icybee\Modules\Views\ActiveRecordProvider;
 use Icybee\Modules\Views\Collection as ViewsCollection;
 use Icybee\Modules\Views\Provider;
@@ -591,13 +592,34 @@ class Hooks
 	}
 	*/
 
-	static public function before_breadcrumb_render_inner_html(\Icybee\Modules\Pages\BreadcrumbElement\BeforeRenderInnerHTMLEvent $event, \Icybee\Modules\Pages\BreadcrumbElement $target)
+	/**
+	 * Replaces `${term.<name>}` patterns—where `<name>` if the name of a term—found in
+	 * breadcrumb labels by the corresponding term name.
+	 *
+	 * @param BreadcrumbElement\BeforeRenderInnerHTMLEvent $event
+	 * @param BreadcrumbElement $target
+	 */
+	static public function before_breadcrumb_render_inner_html(BreadcrumbElement\BeforeRenderInnerHTMLEvent $event, BreadcrumbElement $target)
 	{
+		$context = \ICanBoogie\app()->request->context;
+
+		if (empty($context->node))
+		{
+			return;
+		}
+
+		$node = $context->node;
+		$replace = function($match) use ($node) {
+
+			list(, $term) = $match;
+
+			return $node->$term;
+
+		};
+
 		foreach ($event->slices as &$slice)
 		{
-			if (strpos($slice['label'], ':term') === false || empty($event->page->node)) continue;
-
-			$slice['label'] = \ICanBoogie\format($slice['label'], array('term' => (string) $event->page->node->category));
+			$slice['label'] = preg_replace_callback('/\$\{term.([^\}]+)\}/', $replace, $slice['label']);
 		}
 	}
 }
