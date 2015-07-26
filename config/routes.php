@@ -1,27 +1,17 @@
 <?php
 
-return array
-(
-	'!admin:manage' => array
-	(
+namespace Icybee\Modules\Taxonomy\Vocabulary;
 
-	),
+use ICanBoogie\HTTP\Request;
+use Icybee\Routing\RouteMaker as Make;
 
-	'!admin:new' => array
-	(
+return Make::admin('taxonomy.vocabulary', Routing\VocabularyAdminController::class, [
 
-	),
+	'only' => [ 'index', 'create', 'edit', 'order' ],
+	'actions' => [
 
-	'!admin:edit' => array
-	(
+		'order' => [ '/{name}/{id}/order', Request::METHOD_ANY ]
 
-	),
+	]
 
-	'admin:taxonomy.vocabulary/order' => array
-	(
-		'pattern' => '/admin/taxonomy.vocabulary/<\d+>/order',
-		'title' => 'Ordonner',
-		'block' => 'order',
-		'visibility' => 'auto'
-	)
-);
+]);
