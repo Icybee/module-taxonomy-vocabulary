@@ -13,8 +13,13 @@ namespace Icybee\Modules\Taxonomy\Vocabulary;
 
 use ICanBoogie\Modules;
 
+use Icybee\Binding\ObjectBindings;
+use Icybee\Modules\Nodes\Module as NodesModule;
+
 class SaveOperation extends \ICanBoogie\SaveOperation
 {
+	use ObjectBindings;
+
 	protected function lazy_get_properties()
 	{
 		$request = $this->request;
@@ -27,7 +32,7 @@ class SaveOperation extends \ICanBoogie\SaveOperation
 
 		$app = $this->app;
 
-		if (!$this->key || !$app->user->has_permission(\Icybee\Modules\Nodes\Module::PERMISSION_MODIFY_BELONGING_SITE))
+		if (!$this->key || !$app->user->has_permission(NodesModule::PERMISSION_MODIFY_BELONGING_SITE))
 		{
 			$properties['siteid'] = $app->site_id;
 		}

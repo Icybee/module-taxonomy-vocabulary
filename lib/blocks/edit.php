@@ -123,7 +123,7 @@ class EditBlock extends \Icybee\EditBlock
 				continue;
 			}
 
-			$scope_options[$module_id] = I18n\t($module_id, array(), array('scpope' => 'module_title', 'default' => $descriptor[Descriptor::TITLE]));
+			$scope_options[$module_id] = $this->t($module_id, array(), array('scpope' => 'module_title', 'default' => $descriptor[Descriptor::TITLE]));
 		}
 
 		uasort($scope_options, 'ICanBoogie\unaccent_compare_ci');

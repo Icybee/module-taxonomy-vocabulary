@@ -45,7 +45,7 @@ class Module extends \Icybee\Module
 		$rc .= '</ol>';
 
 		$rc .= '<div class="actions">';
-		$rc .= '<button class="save">' . I18n\t('label.save') . '</button>';
+		$rc .= '<button class="save">' . $app->translate('label.save') . '</button>';
 		$rc .= '</div>';
 
 		$rc .= '</form>';

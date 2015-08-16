@@ -58,10 +58,10 @@ class VocabularyColumn extends Column
 			$last = array_pop($terms);
 
 			$includes = $terms
-				? I18n\t('Including: !list and !last', array('!list' => \ICanBoogie\shorten(implode(', ', $terms), 128, 1), '!last' => $last))
-				: I18n\t('Including: !entry', array('!entry' => $last));
+				? $this->t('Including: !list and !last', array('!list' => \ICanBoogie\shorten(implode(', ', $terms), 128, 1), '!last' => $last))
+				: $this->t('Including: !entry', array('!entry' => $last));
 
-			$order_url = \ICanBoogie\Routing\contextualize("/admin/{$this->manager->module->id}/$vid/order");
+			$order_url = $this->app->url_for("admin:{$this->manager->module->id}:order", [ 'vid' => $vid ]);
 
 			$order_link = <<<EOT
 <a href="$order_url">Order the terms</a>
@@ -103,14 +103,16 @@ class ScopeColumn extends Column
 			// TODO-20150310: use a route
 			foreach ($scope as &$constructor)
 			{
-				$constructor = '<a href="' . $context . '/admin/' . $constructor . '">' . I18n\t($app->modules->descriptors[$constructor][Descriptor::TITLE]) . '</a>';
+				$constructor = '<a href="' . $context . '/admin/' . $constructor . '">'
+					. $this->t($app->modules->descriptors[$constructor][Descriptor::TITLE])
+					. '</a>';
 			}
 
 			$last = array_pop($scope);
 
 			$includes = $scope
-				? I18n\t(':list and :last', array(':list' => \ICanBoogie\shorten(implode(', ', $scope), 128, 1), ':last' => $last))
-				: I18n\t(':one', array(':one' => $last));
+				? $this->t(':list and :last', array(':list' => \ICanBoogie\shorten(implode(', ', $scope), 128, 1), ':last' => $last))
+				: $this->t(':one', array(':one' => $last));
 		}
 		else
 		{

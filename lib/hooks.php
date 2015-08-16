@@ -10,9 +10,9 @@ use Brickrouge\Form;
 use Brickrouge\Text;
 
 use Icybee\Modules\Pages\BreadcrumbElement;
-use Icybee\Modules\Views\ActiveRecordProvider;
+//use Icybee\Modules\Views\ActiveRecordProvider;
 use Icybee\Modules\Views\Collection as ViewsCollection;
-use Icybee\Modules\Views\Provider;
+//use Icybee\Modules\Views\Provider;
 use Icybee\Modules\Nodes\Node;
 
 class Hooks
@@ -130,7 +130,7 @@ class Hooks
 
 	static public function on_nodes_editblock_alter_children(Event $event, \Icybee\Modules\Nodes\EditBlock $block)
 	{
-		$app = \ICanBoogie\app();
+		$app = self::app();
 
 		$document = $app->document;
 
@@ -228,7 +228,7 @@ class Hooks
 						Element::GROUP => 'organize',
 						Element::OPTIONS => array(null => '') + $options,
 						Element::REQUIRED => $vocabulary->is_required,
-						Element::INLINE_HELP => '<a href="' . $edit_url . '">' . I18n\t('Edit the vocabulary <q>!vocabulary</q>', array('!vocabulary' => $vocabulary->vocabulary)) . '</a>.',
+						Element::INLINE_HELP => '<a href="' . $edit_url . '">' . $app->translate('Edit the vocabulary <q>!vocabulary</q>', array('!vocabulary' => $vocabulary->vocabulary)) . '</a>.',
 
 						'value' => $value
 					)
@@ -621,5 +621,13 @@ class Hooks
 		{
 			$slice['label'] = preg_replace_callback('/\$\{term.([^\}]+)\}/', $replace, $slice['label']);
 		}
+	}
+
+	/**
+	 * @return \ICanBoogie\Core|\Icybee\Binding\CoreBindings
+	 */
+	static private function app()
+	{
+		return \ICanBoogie\app();
 	}
 }

@@ -11,10 +11,15 @@
 
 namespace Icybee\Modules\Taxonomy\Vocabulary;
 
+use ICanBoogie\Errors;
 use ICanBoogie\Operation;
+
+use Icybee\Binding\ObjectBindings;
 
 class OrderOperation extends Operation
 {
+	use ObjectBindings;
+
 	protected function get_controls()
 	{
 		return array
@@ -25,7 +30,7 @@ class OrderOperation extends Operation
 		+ parent::get_controls();
 	}
 
-	protected function validate(\ICanboogie\Errors $errors)
+	protected function validate(Errors $errors)
 	{
 		return !empty($this->request['terms']);
 	}
