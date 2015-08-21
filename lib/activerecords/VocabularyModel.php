@@ -11,7 +11,9 @@
 
 namespace Icybee\Modules\Taxonomy\Vocabulary;
 
-class Model extends \ICanBoogie\ActiveRecord\Model
+use ICanBoogie\ActiveRecord\Model;
+
+class VocabularyModel extends Model
 {
 	public function save(array $properties, $key=null, array $options=array())
 	{
