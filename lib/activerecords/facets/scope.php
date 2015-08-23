@@ -24,9 +24,11 @@ class ScopeCriterion extends Criterion
 			return $query;
 		}
 
-		$scope_query = ActiveRecord\get_model('taxonomy.vocabulary/scopes')
-		->select('constructor')
-		->where('{alias}.vid = vid');
+		$scope_query = $query
+			->model
+			->models['taxonomy.vocabulary/scopes']
+			->select('constructor')
+			->where('{alias}.vid = vid');
 
 		return $query->and("? IN($scope_query)", $value);
 	}

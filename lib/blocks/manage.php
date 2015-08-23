@@ -36,16 +36,22 @@ use ICanBoogie\Module\Descriptor;
 
 use Icybee\ManageBlock\Column;
 use Icybee\ManageBlock\EditDecorator;
+use Icybee\Modules\Taxonomy\Vocabulary\Vocabulary;
 
 /**
  * Representation of the `vocabulary` column.
  */
 class VocabularyColumn extends Column
 {
+	/**
+	 * @param Vocabulary $record
+	 *
+	 * @inheritdoc
+	 */
 	public function render_cell($record)
 	{
 		$vid = $record->vid;
-		$terms = \ICanBoogie\app()->models['taxonomy.terms']
+		$terms = $record->model->models['taxonomy.terms']
 		->select('term')
 		->filter_by_vid($vid)
 		->order('term.weight, term')
@@ -58,8 +64,8 @@ class VocabularyColumn extends Column
 			$last = array_pop($terms);
 
 			$includes = $terms
-				? $this->t('Including: !list and !last', array('!list' => \ICanBoogie\shorten(implode(', ', $terms), 128, 1), '!last' => $last))
-				: $this->t('Including: !entry', array('!entry' => $last));
+				? $this->t('Including: !list and !last', [ '!list' => \ICanBoogie\shorten(implode(', ', $terms), 128, 1), '!last' => $last ])
+				: $this->t('Including: !entry', [ '!entry' => $last ]);
 
 			$order_url = $this->app->url_for("admin:{$this->manager->module->id}:order", [ 'vid' => $vid ]);
 
@@ -111,8 +117,8 @@ class ScopeColumn extends Column
 			$last = array_pop($scope);
 
 			$includes = $scope
-				? $this->t(':list and :last', array(':list' => \ICanBoogie\shorten(implode(', ', $scope), 128, 1), ':last' => $last))
-				: $this->t(':one', array(':one' => $last));
+				? $this->t(':list and :last', [ ':list' => \ICanBoogie\shorten(implode(', ', $scope), 128, 1), ':last' => $last ])
+				: $this->t(':one', [ ':one' => $last ]);
 		}
 		else
 		{
