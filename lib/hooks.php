@@ -19,7 +19,7 @@ class Hooks
 {
 	static private $vocabularies_cache;
 
-//	static public function get_term(\ICanBoogie\Object\PropertyEvent $event, \Icybee\Modules\Nodes\Node $target)
+//	static public function get_term(\ICanBoogie\Prototyped\PropertyEvent $event, \Icybee\Modules\Nodes\Node $target)
 	static public function get_term(\Icybee\Modules\Nodes\Node $target, $property)
 	{
 		$constructor = $target->constructor;
