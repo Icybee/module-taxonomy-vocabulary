@@ -1,39 +1,30 @@
-@CHARSET "UTF-8";
-
-#taxonomy-order ol
-{
+#taxonomy-order ol {
 	padding: 0;
 	margin: 0;
-	font-size: .9em;
 	list-style: none;
 }
 
-#taxonomy-order li
-{
+#taxonomy-order li {
 	background: white;
 	padding: .2em .4em;
 	cursor: move;
 }
 
-#taxonomy-order li + li
-{
-	border-top: 1px solid #EEEEEE; 
+#taxonomy-order li + li {
+	border-top: 1px solid #EEEEEE;
 }
 
-#taxonomy-order li:nth-child(2n)
-{
+#taxonomy-order li:nth-child(2n) {
 	background-color:#FBFBFB;
 }
 
-#taxonomy-order li:hover
-{
+#taxonomy-order li:hover {
 	background: #f2f8ff;
 }
 
-#taxonomy-order div.actions
-{
-	background-color:#E8E8E8;
+#taxonomy-order .form-actions {
+	background-color: #E8E8E8;
 	border-top:1px solid #CFCFCF;
-	padding: 6px 4px;
+	padding: 20px;
 	text-align: center;
 }

@@ -116,14 +116,19 @@ class EditBlock extends \Icybee\EditBlock
 				continue;
 			}
 
-			$is_instance = $modules->is_extending($module_id, 'nodes');
+			$is_instance = $modules->is_inheriting($module_id, 'nodes');
 
 			if (!$is_instance)
 			{
 				continue;
 			}
 
-			$scope_options[$module_id] = $this->t($module_id, array(), array('scpope' => 'module_title', 'default' => $descriptor[Descriptor::TITLE]));
+			$scope_options[$module_id] = $this->t($module_id, [], [
+
+				'scope' => 'module_title',
+				'default' => $descriptor[Descriptor::TITLE]
+
+			]);
 		}
 
 		uasort($scope_options, 'ICanBoogie\unaccent_compare_ci');
@@ -138,18 +143,16 @@ class EditBlock extends \Icybee\EditBlock
 			$this->values[Vocabulary::SCOPE] = $scope_value;
 		}
 
-		return new Element
-		(
-			Element::TYPE_CHECKBOX_GROUP, array
-			(
-				Form::LABEL => 'scope',
-				Element::OPTIONS => $scope_options,
-				Element::REQUIRED => true,
+		return new Element(Element::TYPE_CHECKBOX_GROUP,[
 
-				'class' => 'list combo',
-				'value' => $scope_value
-			)
-		);
+			Form::LABEL => 'scope',
+			Element::OPTIONS => $scope_options,
+			Element::REQUIRED => true,
+
+			'class' => 'list combo',
+			'value' => $scope_value
+
+		]);
 	}
 
 	protected function get_control__site()

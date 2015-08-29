@@ -8,7 +8,7 @@ use Icybee\Routing\RouteMaker as Make;
 return Make::admin('taxonomy.vocabulary', Routing\VocabularyAdminController::class, [
 
 	'id_name' => 'vid',
-	'only' => [ 'index', 'create', 'edit', 'order' ],
+	'except' => 'config',
 	'actions' => [
 
 		'order' => [ '/{name}/{id}/order', Request::METHOD_ANY ]

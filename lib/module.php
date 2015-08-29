@@ -11,6 +11,9 @@
 
 namespace Icybee\Modules\Taxonomy\Vocabulary;
 
+use Brickrouge\Button;
+use Brickrouge\Element;
+use Brickrouge\Form;
 use ICanBoogie\I18n;
 use ICanBoogie\Operation;
 
@@ -28,11 +31,7 @@ class Module extends \Icybee\Module
 
 		$terms = $app->models['taxonomy.terms']->filter_by_vid($vid)->order('term.weight, vtid')->all;
 
-		$rc  = '<form id="taxonomy-order" method="post">';
-		$rc .= '<input type="hidden" name="' . Operation::NAME . '" value="' . self::OPERATION_ORDER . '" />';
-		$rc .= '<input type="hidden" name="' . Operation::DESTINATION . '" value="' . $this . '" />';
-		$rc .= '<input type="hidden" name="' . Operation::KEY . '" value="' . $vid . '" />';
-		$rc .= '<ol>';
+		$rc = '<ol>';
 
 		foreach ($terms as $term)
 		{
@@ -43,13 +42,27 @@ class Module extends \Icybee\Module
 		}
 
 		$rc .= '</ol>';
+		
+		return new Form([
 
-		$rc .= '<div class="actions">';
-		$rc .= '<button class="save">' . $app->translate('label.save') . '</button>';
-		$rc .= '</div>';
+			Form::ACTIONS => [
 
-		$rc .= '</form>';
+				new Button('Save', [ 'type' => 'submit', 'class' => 'btn btn-primary' ])
 
-		return $rc;
+			],
+
+			Form::HIDDENS => [
+
+				Operation::NAME => self::OPERATION_ORDER,
+				Operation::DESTINATION => $this,
+				Operation::KEY => $vid
+
+			],
+
+			Element::INNER_HTML => $rc,
+
+			'id' => 'taxonomy-order'
+
+		]);
 	}
 }
