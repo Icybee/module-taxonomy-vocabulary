@@ -246,7 +246,7 @@ class Hooks
 		);
 	}
 
-	static public function on_node_save(\ICanBoogie\Operation\ProcessEvent $event, \Icybee\Modules\Nodes\SaveOperation $target)
+	static public function on_node_save(\ICanBoogie\Operation\ProcessEvent $event, \Icybee\Modules\Nodes\Operation\SaveOperation $target)
 	{
 		$app = \ICanBoogie\app();
 

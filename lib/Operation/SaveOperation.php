@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Icybee\Modules\Taxonomy\Vocabulary;
+namespace Icybee\Modules\Taxonomy\Vocabulary\Operation;
 
 use ICanBoogie\Modules;
 
 use Icybee\Binding\ObjectBindings;
 use Icybee\Modules\Nodes\Module as NodesModule;
 
-class SaveOperation extends \ICanBoogie\SaveOperation
+class SaveOperation extends \ICanBoogie\Module\Operation\SaveOperation
 {
 	use ObjectBindings;
 
