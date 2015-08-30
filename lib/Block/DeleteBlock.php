@@ -9,12 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Icybee\Modules\Taxonomy\Vocabulary;
+namespace Icybee\Modules\Taxonomy\Vocabulary\Block;
+
+use Icybee\Modules\Taxonomy\Vocabulary\Vocabulary;
 
 /**
  * @property Vocabulary $record
  */
-class DeleteBlock extends \Icybee\DeleteBlock
+class DeleteBlock extends \Icybee\Block\DeleteBlock
 {
 	protected function get_record_name()
 	{

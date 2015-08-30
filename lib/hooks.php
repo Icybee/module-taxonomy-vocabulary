@@ -128,7 +128,7 @@ class Hooks
 		return $getters[$property]($target);
 	}
 
-	static public function on_nodes_editblock_alter_children(Event $event, \Icybee\Modules\Nodes\EditBlock $block)
+	static public function on_nodes_editblock_alter_children(Event $event, \Icybee\Modules\Nodes\Block\EditBlock $block)
 	{
 		$app = self::app();
 

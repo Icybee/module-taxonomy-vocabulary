@@ -9,25 +9,25 @@
  * file that was distributed with this source code.
  */
 
-namespace Icybee\Modules\Taxonomy\Vocabulary;
+namespace Icybee\Modules\Taxonomy\Vocabulary\Block;
 
 use ICanBoogie\I18n;
 use ICanBoogie\Module\Descriptor;
 
 use Brickrouge\Element;
 use Brickrouge\Form;
-use Brickrouge\Text;
 use Brickrouge\Widget;
 
 use Icybee\Modules\Nodes\TitleSlugCombo;
+use Icybee\Modules\Taxonomy\Vocabulary\Vocabulary;
 
-class EditBlock extends \Icybee\EditBlock
+class EditBlock extends \Icybee\Block\EditBlock
 {
 	static protected function add_assets(\Brickrouge\Document $document)
 	{
 		parent::add_assets($document);
 
-		$document->css->add(DIR . 'public/admin.css');
+		$document->css->add(\Icybee\Modules\Taxonomy\Vocabulary\DIR . 'public/admin.css');
 	}
 
 	protected function lazy_get_attributes()
