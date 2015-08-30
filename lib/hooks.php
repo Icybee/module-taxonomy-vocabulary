@@ -2,6 +2,7 @@
 
 namespace Icybee\Modules\Taxonomy\Vocabulary;
 
+use Brickrouge\Group;
 use ICanBoogie\Event;
 use ICanBoogie\I18n;
 
@@ -11,6 +12,7 @@ use Brickrouge\Text;
 
 use Icybee\Modules\Pages\BreadcrumbElement;
 //use Icybee\Modules\Views\ActiveRecordProvider;
+use Icybee\Modules\Taxonomy\Vocabulary\Element\TagsPicker;
 use Icybee\Modules\Views\Collection as ViewsCollection;
 //use Icybee\Modules\Views\Provider;
 use Icybee\Modules\Nodes\Node;
@@ -155,58 +157,40 @@ class Hooks
 
 		foreach ($vocabularies as $vocabulary)
 		{
-			$vid = $vocabulary->vid;;
+			$vid = $vocabulary->vid;
 
 			$identifier = $identifier_base . '[' . $vid . ']';
 
-			if ($vocabulary->is_multiple)
+			if ($vocabulary->is_tags)
 			{
 				$options = $terms_model->select('term, count(nid)')
-				->join('inner join {self}__nodes using(vtid)')
-				->filter_by_vid($vid)
-				->group('term')->order('term')->pairs;
+					->join(':taxonomy.terms/nodes', [ 'mode' => 'LEFT' ])
+					->filter_by_vid($vid)
+					->group('term')
+					->order('term')
+					->pairs;
 
 				$value = $nodes_model->select('term')
-				->filter_by_vid_and_nid($vid, $nid)
-				->order('term')
-				->all(\PDO::FETCH_COLUMN);
+					->filter_by_vid_and_nid($vid, $nid)
+					->order('term')
+					->all(\PDO::FETCH_COLUMN);
+
 				$value = implode(', ', $value);
 
 				$label = $vocabulary->vocabulary;
 
-				$children[] = new Element
-				(
-					'div', array
-					(
-						Form::LABEL => $label,
+				$children[] = new TagsPicker([
 
-						Element::GROUP => 'organize',
-						Element::WEIGHT => 100,
+					Group::LABEL => $label,
 
-						Element::CHILDREN => array
-						(
-							new Text
-							(
-								array
-								(
-									'value' => $value,
-									'name' => $identifier
-								)
-							),
+					Element::GROUP => 'organize',
+					Element::WEIGHT => 100,
+					Element::OPTIONS => $options,
 
-							new CloudElement
-							(
-								'ul', array
-								(
-									Element::OPTIONS => $options,
-									'class' => 'cloud'
-								)
-							)
-						),
+					'name' => $identifier,
+					'value' => $value
 
-						'class' => 'taxonomy-tags widget-bordered'
-					)
-				);
+				]);
 			}
 			else
 			{
