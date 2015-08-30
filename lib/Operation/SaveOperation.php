@@ -13,12 +13,12 @@ namespace Icybee\Modules\Taxonomy\Vocabulary\Operation;
 
 use ICanBoogie\Modules;
 
-use Icybee\Binding\ObjectBindings;
+use Icybee\Binding\PrototypedBindings;
 use Icybee\Modules\Nodes\Module as NodesModule;
 
 class SaveOperation extends \ICanBoogie\Module\Operation\SaveOperation
 {
-	use ObjectBindings;
+	use PrototypedBindings;
 
 	protected function lazy_get_properties()
 	{

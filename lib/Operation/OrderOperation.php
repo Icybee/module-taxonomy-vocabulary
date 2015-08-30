@@ -14,11 +14,11 @@ namespace Icybee\Modules\Taxonomy\Vocabulary\Operation;
 use ICanBoogie\Errors;
 use ICanBoogie\Operation;
 
-use Icybee\Binding\ObjectBindings;
+use Icybee\Binding\PrototypedBindings;
 
 class OrderOperation extends Operation
 {
-	use ObjectBindings;
+	use PrototypedBindings;
 
 	protected function get_controls()
 	{
