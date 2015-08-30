@@ -8,8 +8,8 @@ return [
 
 		'taxonomy.vocabulary' => [
 
-			'vocabulary' => __NAMESPACE__ . '\VocabularyCriterion',
-			'scope' => __NAMESPACE__ . '\ScopeCriterion'
+			'vocabulary' => Facets\VocabularyCriterion::class,
+			'scope' => Facets\ScopeCriterion::class
 
 		]
 	]

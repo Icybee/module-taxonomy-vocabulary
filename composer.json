@@ -19,6 +19,8 @@
 		"icanboogie/activerecord": "^2.3.0"
 	},
 	"autoload": {
-		"classmap": [ "lib" ]
+		"psr-4": {
+			"Icybee\\Modules\\Taxonomy\\Vocabulary\\": "lib"
+		}
 	}
 }

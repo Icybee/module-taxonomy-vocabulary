@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Icybee\Modules\Taxonomy\Vocabulary;
+namespace Icybee\Modules\Taxonomy\Vocabulary\Element;
 
 use Brickrouge\Element;
 use Brickrouge\ElementIsEmpty;

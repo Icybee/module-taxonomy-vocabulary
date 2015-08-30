@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Icybee\Modules\Taxonomy\Vocabulary;
+namespace Icybee\Modules\Taxonomy\Vocabulary\Facets;
 
 use ICanBoogie\ActiveRecord;
 use ICanBoogie\Facets\Criterion;

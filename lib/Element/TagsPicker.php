@@ -5,8 +5,6 @@ namespace Icybee\Modules\Taxonomy\Vocabulary\Element;
 use Brickrouge\Element;
 use Brickrouge\Text;
 
-use Icybee\Modules\Taxonomy\Vocabulary\CloudElement;
-
 /**
  * An element to pick, and add, tags.
  */
