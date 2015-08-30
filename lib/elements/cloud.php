@@ -12,6 +12,7 @@
 namespace Icybee\Modules\Taxonomy\Vocabulary;
 
 use Brickrouge\Element;
+use Brickrouge\ElementIsEmpty;
 
 class CloudElement extends Element
 {
@@ -23,25 +24,37 @@ class CloudElement extends Element
 
 		if (!$options)
 		{
-			return;
+			throw new ElementIsEmpty;
 		}
 
-		$min = min($options);
+		$n = count($options);
 		$max = max($options);
+		$sum = array_sum($options);
+		$med = $sum / $n;
 
-		$range = ($min == $max) ? 1 : $max - $min;
 		$levels = $this[self::T_LEVELS] ?: 8;
-
 		$markup = $this->type == 'ul' ? 'li' : 'span';
-
 		$rc = '';
 
 		foreach ($options as $name => $usage)
 		{
-			$popularity = ($usage - $min) / $range;
-			$level = 1 + ceil($popularity * ($levels - 1));
+			$per = .5;
 
-			$rc .= '<' . $markup . ' class="tag' . $level . '">' . $name . '</' . $markup . '>' . PHP_EOL;
+			if ($usage < $med)
+			{
+				$per = ($usage / $med) / 2;
+			}
+			else if ($usage > $med)
+			{
+				$per = ($usage / $max) / 2 + .5;
+			}
+
+			$level = ceil($levels * $per);
+
+			$rc .= <<<EOT
+<$markup class="tag$level">$name</$markup>
+
+EOT;
 		}
 
 		return $rc;
