@@ -16,6 +16,8 @@ use ICanBoogie\Routing\ToSlug;
 
 class Vocabulary extends ActiveRecord implements ToSlug
 {
+	const MODEL_ID = 'taxonomy.vocabulary';
+
 	const VID = 'vid';
 	const SITEID = 'siteid';
 	const VOCABULARY = 'vocabulary';
