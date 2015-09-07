@@ -40,9 +40,9 @@ class Hooks
 		{
 			self::$vocabularies_cache[$constructor] = $vocabularies = $models['taxonomy.vocabulary']
 			->join(':taxonomy.vocabulary/scopes')
-			->where('siteid = 0 OR siteid = ?', $target->siteid)
+			->where('site_id = 0 OR site_id = ?', $target->site_id)
 			->filter_by_constructor((string) $constructor)
-			->order('siteid DESC')
+			->order('site_id DESC')
 			->all;
 		}
 
@@ -141,7 +141,7 @@ class Hooks
 
 		$vocabularies = $app->models['taxonomy.vocabulary']
 		->join('INNER JOIN {self}__scopes USING(vid)')
-		->where('constructor = ? AND (siteid = 0 OR siteid = ?)', (string) $event->module, $app->site_id)
+		->where('constructor = ? AND (site_id = 0 OR site_id = ?)', (string) $event->module, $app->site_id)
 		->order('weight')
 		->all;
 

@@ -34,7 +34,7 @@ class SaveOperation extends \ICanBoogie\Module\Operation\SaveOperation
 
 		if (!$this->key || !$app->user->has_permission(NodesModule::PERMISSION_MODIFY_BELONGING_SITE))
 		{
-			$properties['siteid'] = $app->site_id;
+			$properties['site_id'] = $app->site_id;
 		}
 
 		return $properties;

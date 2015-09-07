@@ -16,7 +16,7 @@ return [
 			Model::SCHEMA => [
 
 				'vid' => 'serial',
-				'siteid' => 'foreign',
+				'site_id' => 'foreign',
 				'vocabulary' => 'varchar',
 				'vocabularyslug' => [ 'varchar', 80, 'indexed' => true ],
 				'is_tags' => 'boolean',

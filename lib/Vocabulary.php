@@ -19,7 +19,7 @@ class Vocabulary extends ActiveRecord implements ToSlug
 	const MODEL_ID = 'taxonomy.vocabulary';
 
 	const VID = 'vid';
-	const SITEID = 'siteid';
+	const SITE_ID = 'site_id';
 	const VOCABULARY = 'vocabulary';
 	const VOCABULARYSLUG = 'vocabularyslug';
 	const IS_TAGS = 'is_tags';
@@ -42,7 +42,7 @@ class Vocabulary extends ActiveRecord implements ToSlug
 	 *
 	 * @var int
 	 */
-	public $siteid;
+	public $site_id;
 
 	/**
 	 * Name of the vocabulary.

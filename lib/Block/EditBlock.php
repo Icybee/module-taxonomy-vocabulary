@@ -99,7 +99,7 @@ class EditBlock extends \Icybee\Block\EditBlock
 					)
 				),
 
-				Vocabulary::SITEID => $this->get_control__site()
+				Vocabulary::SITE_ID => $this->get_control__site()
 			)
 		);
 	}
@@ -170,16 +170,16 @@ class EditBlock extends \Icybee\Block\EditBlock
 		(
 			'select', array
 			(
-				Form::LABEL => 'siteid',
+				Form::LABEL => 'site_id',
 				Element::OPTIONS => array
 				(
 					null => ''
 				)
-				+ $app->models['sites']->select('siteid, IF(admin_title != "", admin_title, concat(title, ":", language))')->order('admin_title, title')->pairs,
+				+ $app->models['sites']->select('site_id, IF(admin_title != "", admin_title, concat(title, ":", language))')->order('admin_title, title')->pairs,
 
 				Element::DEFAULT_VALUE => $app->site_id,
 				Element::GROUP => 'admin',
-				Element::DESCRIPTION => 'siteid'
+				Element::DESCRIPTION => 'site_id'
 			)
 		);
 	}
