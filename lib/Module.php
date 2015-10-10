@@ -29,7 +29,7 @@ class Module extends \Icybee\Module
 		$document->js->add(DIR . 'public/order.js');
 		$document->css->add(DIR . 'public/order.css');
 
-		$terms = $app->models['taxonomy.terms']->filter_by_vid($vid)->order('term.weight, vtid')->all;
+		$terms = $app->models['taxonomy.terms']->filter_by_vid($vid)->order('term.weight, term_id')->all;
 
 		$rc = '<ol>';
 
@@ -42,7 +42,7 @@ class Module extends \Icybee\Module
 		}
 
 		$rc .= '</ol>';
-		
+
 		return new Form([
 
 			Form::ACTIONS => [

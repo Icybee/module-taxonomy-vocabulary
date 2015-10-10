@@ -39,12 +39,12 @@ class OrderOperation extends Operation
 	{
 		$w = 0;
 		$weights = array();
-		$update = $this->app->models['taxonomy.terms']->prepare('UPDATE {self} SET weight = ? WHERE vtid = ?');
+		$update = $this->app->models['taxonomy.terms']->prepare('UPDATE {self} SET weight = ? WHERE term_id = ?');
 
-		foreach ($this->request['terms'] as $vtid => $dummy)
+		foreach ($this->request['terms'] as $term_id => $dummy)
 		{
-			$update->execute(array($w, $vtid));
-			$weights[$vtid] = $w++;
+			$update->execute(array($w, $term_id));
+			$weights[$term_id] = $w++;
 		}
 
 		return true;

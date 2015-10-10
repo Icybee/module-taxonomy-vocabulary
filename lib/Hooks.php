@@ -85,12 +85,12 @@ class Hooks
 
 			$prototype["lazy_get_$slug"] = $getters[$slug] = function(Node $node) use($terms_model, $vocabulary) {
 
-				static $vtid_by_nid;
+				static $term_id_by_nid;
 
-				if (!$vtid_by_nid)
+				if (!$term_id_by_nid)
 				{
-					$vtid_by_nid = $terms_model
-					->select('nid, vtid')
+					$term_id_by_nid = $terms_model
+					->select('nid, term_id')
 					->join(':taxonomy.terms/nodes')
 					->filter_by_vid($vocabulary->vid)
 					->all(\PDO::FETCH_GROUP | \PDO::FETCH_COLUMN);
@@ -99,28 +99,28 @@ class Hooks
 					# Warming up ActiveRecord's cache with terms.
 					#
 
-					$vtids = [];
+					$term_id_list = [];
 
-					foreach ($vtid_by_nid as $v)
+					foreach ($term_id_by_nid as $v)
 					{
-						$vtids = array_merge($vtids, $v);
+						$term_id_list = array_merge($term_id_list, $v);
 					}
 
-					$vtids = array_unique($vtids);
+					$term_id_list = array_unique($term_id_list);
 
-					$terms_model->find($vtids);
+					$terms_model->find($term_id_list);
 				}
 
 				$nid = $node->nid;
 
-				if (empty($vtid_by_nid[$nid]))
+				if (empty($term_id_by_nid[$nid]))
 				{
 					// TODO-20140921: is_required => create a fake "uncategorized" instance
 
 					return;
 				}
 
-				$terms = $terms_model->find($vtid_by_nid[$nid]);
+				$terms = $terms_model->find($term_id_by_nid[$nid]);
 
 				return ($vocabulary->is_multiple || $vocabulary->is_tags) ? $terms : reset($terms);
 
@@ -194,14 +194,14 @@ class Hooks
 			}
 			else
 			{
-				$options = $terms_model->select('term.vtid, term')->filter_by_vid($vid)->order('term')->pairs;
+				$options = $terms_model->select('term.term_id, term')->filter_by_vid($vid)->order('term')->pairs;
 
 				if (!$options)
 				{
 					//continue;
 				}
 
-				$value = $nodes_model->select('term_node.vtid')->filter_by_vid_and_nid($vid, $nid)->order('term')->rc;
+				$value = $nodes_model->select('term_node.term_id')->filter_by_vid_and_nid($vid, $nid)->order('term')->rc;
 
 				$edit_url = $app->site->path . '/admin/taxonomy.vocabulary/' . $vocabulary->vid . '/edit';
 				$children[$identifier] = new Element
@@ -284,13 +284,13 @@ class Hooks
 
 				foreach ($terms as $term)
 				{
-					$vtid = $terms_model->select('vtid')->where('vid = ? and term = ?', $vid, $term)->rc;
+					$term_id = $terms_model->select('term_id')->where('vid = ? and term = ?', $vid, $term)->rc;
 
 					// FIXME-20090127: only users with 'create tags' permissions should be allowed to create tags
 
-					if (!$vtid)
+					if (!$term_id)
 					{
-						$vtid = $terms_model->save
+						$term_id = $terms_model->save
 						(
 							array
 							(
@@ -300,17 +300,17 @@ class Hooks
 						);
 					}
 
-					$values[] = $vtid;
+					$values[] = $term_id;
 				}
 			}
 
-			foreach ((array) $values as $vtid)
+			foreach ((array) $values as $term_id)
 			{
 				$nodes_model->insert
 				(
 					array
 					(
-						'vtid' => $vtid,
+						'term_id' => $term_id,
 						'nid' => $nid
 					),
 
@@ -322,259 +322,6 @@ class Hooks
 			}
 		}
 	}
-
-	/*
-	static public function on_collect_views(ViewsCollection\CollectEvent $event, ViewsCollection $target)
-	{
-		global $core;
-
-		$vocabulary = $core->models['taxonomy.vocabulary']->all;
-		$collection = &$event->collection;
-
-		foreach ($vocabulary as $v)
-		{
-			$scope = $v->scope;
-			$vocabulary_name = $v->vocabulary;
-			$vocabulary_slug = $v->vocabularyslug;
-
-			foreach ($scope as $constructor)
-			{
-				$view_home = $constructor . '/home';
-				$view_home = isset($collection[$view_home]) ? $collection[$view_home] : null;
-
-				$view_list = $constructor . '/list';
-				$view_list = isset($collection[$view_list]) ? $collection[$view_list] : null;
-
-				if ($view_home)
-				{
-					$collection["$constructor/vocabulary/$vocabulary_slug/vocabulary-home"] = array
-					(
-						'title' => 'Home for vocabulary %name',
-						'title args' => array('name' => $v->vocabulary),
-						'taxonomy vocabulary' => $v
-					)
-
-					+ $view_home;
-				}
-
-				if ($view_list)
-				{
-					$collection["$constructor/vocabulary/$vocabulary_slug/list"] = array
-					(
-						'title' => 'Records list, in vocabulary %vocabulary and a term',
-						'title args' => array('vocabulary' => $vocabulary_name),
-						'taxonomy vocabulary' => $v
-					)
-
-					+ $view_list;
-				}
-
-				foreach ($v->terms as $term)
-				{
-					$term_name = $term->term;
-					$term_slug = $term->termslug;
-
-					if ($view_home)
-					{
-						$collection["$constructor/vocabulary/$vocabulary_slug/$term_slug/home"] = array
-						(
-							'title' => 'Records home, in vocabulary %vocabulary and term %term',
-							'title args' => array('vocabulary' => $vocabulary_name, 'term' => $term_name),
-							'taxonomy vocabulary' => $v,
-							'taxonomy term' => $term,
-						)
-
-						+ $view_home;
-					}
-
-					if ($view_list)
-					{
-						$collection["$constructor/vocabulary/$vocabulary_slug/$term_slug/list"] = array
-						(
-							'title' => 'Records list, in vocabulary %vocabulary and term %term',
-							'title args' => array('vocabulary' => $vocabulary_name, 'term' => $term_name),
-							'taxonomy vocabulary' => $v,
-							'taxonomy term' => $term
-						)
-
-						+ $view_list;
-					}
-				}
-			}
-		}
-	}
-
-	static public function on_alter_provider_query(\Icybee\Modules\Views\ActiveRecordProvider\AlterQueryEvent $event, \Icybee\Modules\Views\ActiveRecordProvider $provider)
-	{
-		global $core;
-
-// 		var_dump($event->view);
-
-		$options = $event->view->options;
-
-		if (isset($options['taxonomy vocabulary']) && isset($options['taxonomy term']))
-		{
-			return self::for_vocabulary_and_term($event, $provider, $options, $options['taxonomy vocabulary'], $options['taxonomy term']);
-		}
-
-		if (empty($event->view->options['taxonomy vocabulary']))
-		{
-			return;
-		}
-
-		$vocabulary = $event->view->options['taxonomy vocabulary'];
-		$condition = $vocabulary->vocabularyslug . 'slug';
-
-		#
-		# FIXME-20121226: It has to be known that the conditions is `<vocabularyslug>slug`.
-		#
-		# is condition is required by "in vocabulary and a term", but we don't check that, which
-		# can cause problems when the pattern of the page is incorrect e.g. "tagslug" instead of
-		# "tagsslug"
-		#
-
-		if (empty($event->conditions[$condition]))
-		{
-			# show all by category ?
-
-			$event->view->range['limit'] = null; // cancel limit TODO-20120403: this should be improved.
-
-			$core->events->attach(array(__CLASS__, 'on_alter_provider_result'));
-
-			return;
-		}
-
-		$condition_value = $event->conditions[$condition];
-
-		$term = $core->models['taxonomy.terms']->where('vid = ? AND termslug = ?', array($vocabulary->vid, $condition_value))->order('term.weight')->one;
-
-		$core->events->attach(function(ActiveRecordProvider\AlterContextEvent $event, ActiveRecordProvider $target) use($term) {
-
-			$event->context['term'] = $term;
-
-		});
-
-		$event->query->where('nid IN (SELECT nid FROM {prefix}taxonomy_terms
-		INNER JOIN {prefix}taxonomy_terms__nodes USING(vtid) WHERE vtid = ?)', $term ? $term->vtid : 0);
-
-		#
-
-		global $core;
-
-		$page = isset($core->request->context->page) ? $core->request->context->page : null;
-
-		if ($page && $term)
-		{
-			$page->title = \ICanBoogie\format($page->title, array(':term' => $term->term));
-		}
-	}
-
-	static public function on_alter_provider_result(\Icybee\Modules\Views\ActiveRecordProvider\AlterResultEvent $event, \Icybee\Modules\Views\ActiveRecordProvider $provider)
-	{
-		global $core;
-
-		$vocabulary = $event->view->options['taxonomy vocabulary'];
-
-		$ids = '';
-		$records_by_id = array();
-
-		foreach ($event->result as $record)
-		{
-			if (!($record instanceof \Icybee\Modules\Nodes\Node))
-			{
-				/*
-				 * we return them as [ term: [], nodes: []]
-				 *
-				 * check double event ?
-				 *
-				 * http://demo.icybee.localhost/articles/category/
-				 *
-				trigger_error(\ICanBoogie\format('Expected instance of <q>Icybee\Modules\Nodes\Node</q> given: \1', array($record)));
-
-				var_dump($event); exit;
-				* /
-
-				continue;
-			}
-
-			$nid = $record->nid;
-			$ids .= ',' . $nid;
-			$records_by_id[$nid] = $record;
-		}
-
-		if (!$ids)
-		{
-			return;
-		}
-
-		$ids = substr($ids, 1);
-
-		/*
-		$ids_by_names = $core->models['taxonomy.terms/nodes']
-		->join(':nodes')
-		->select('term, nid')
-		->order('term.weight, term.term')
-		->where('vid = ? AND nid IN(' . $ids . ')', $vocabulary->vid)
-		->all(\PDO::FETCH_GROUP | \PDO::FETCH_COLUMN);
-
-		var_dump($ids_by_names);
-
-		$result = array();
-
-		foreach ($ids_by_names as $name => $ids)
-		{
-			$ids = array_flip($ids);
-
-			foreach ($event->result as $record)
-			{
-				if (isset($ids[$record->nid]))
-				{
-					$result[$name][] = $record;
-				}
-			}
-		}
-
-		$event->result = $result;
-		* /
-
-		$ids_by_vtid = $core->models['taxonomy.terms/nodes']
-		->join(':nodes')
-		->select('vtid, nid')
-		->order('term.weight, term.term')
-		->where('vid = ? AND nid IN(' . $ids . ')', $vocabulary->vid)
-		->all(\PDO::FETCH_GROUP | \PDO::FETCH_COLUMN);
-
-		$terms = $core->models['taxonomy.terms']->find(array_keys($ids_by_vtid));
-
-		$result = array();
-
-		foreach ($ids_by_vtid as $vtid => $ids)
-		{
-			$result[$vtid]['term'] = $terms[$vtid];
-			$result[$vtid]['nodes'] = array_intersect_key($records_by_id, array_combine($ids, $ids));
-		}
-
-		$event->result = $result;
-	}
-
-	static private function for_vocabulary_and_term(Event $event, Provider $provider, $options, \Icybee\Modules\Taxonomy\Vocabulary\Vocabulary $vocabulary, \Icybee\Modules\Taxonomy\Terms\Term $term)
-	{
-		$event->query->where('nid IN (SELECT nid FROM {prefix}taxonomy_terms
-		INNER JOIN {prefix}taxonomy_terms__nodes USING(vtid) WHERE vtid = ?)', $term ? $term->vtid : 0);
-
-
-
-		/*
-		$core->events->attach
-		(
-			'Icybee\Modules\Pages\Page::render_title', function()
-			{
-				var_dump(func_get_args());
-			}
-		);
-		* /
-	}
-	*/
 
 	/**
 	 * Replaces `${term.<name>}` patterns—where `<name>` if the name of a term—found in

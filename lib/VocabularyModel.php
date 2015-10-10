@@ -82,7 +82,7 @@ class VocabularyModel extends Model
 		// TODO: use model delete() method instead, maybe put an event on 'taxonomy.vocabulary.delete'
 
 		$model = $this->models['taxonomy.terms'];
-		$model->execute('DELETE FROM {self}__nodes WHERE (SELECT vid FROM {self} WHERE {self}__nodes.vtid = {self}.vtid) = ?', array($vid));
+		$model->execute('DELETE FROM {self}__nodes WHERE (SELECT vid FROM {self} WHERE {self}__nodes.term_id = {self}.term_id) = ?', array($vid));
 		$model->execute('DELETE FROM {self} WHERE vid = ?', array($vid));
 	}
 }
