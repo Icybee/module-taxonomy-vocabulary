@@ -57,7 +57,7 @@ class Hooks
 
 		foreach ($vocabularies as $v)
 		{
-			if ($property != $v->vocabularyslug)
+			if ($property != $v->vocabulary_slug)
 			{
 				continue;
 			}

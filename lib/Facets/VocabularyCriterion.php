@@ -23,6 +23,6 @@ class VocabularyCriterion extends Criterion
 			return $query->filter_by_vocabulary_id($value);
 		}
 
-		return $query->filter_by_vocabularyslug($value);
+		return $query->filter_by_vocabulary_slug($value);
 	}
 }

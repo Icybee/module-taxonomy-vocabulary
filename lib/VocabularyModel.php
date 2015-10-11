@@ -17,14 +17,14 @@ class VocabularyModel extends Model
 {
 	public function save(array $properties, $key=null, array $options=array())
 	{
-		if (isset($properties['vocabulary']) && empty($properties['vocabularyslug']))
+		if (isset($properties['vocabulary']) && empty($properties['vocabulary_slug']))
 		{
-			$properties['vocabularyslug'] = \Icybee\slugize($properties['vocabulary']);
+			$properties['vocabulary_slug'] = \Icybee\slugize($properties['vocabulary']);
 		}
 
-		if (isset($properties['vocabularyslug']))
+		if (isset($properties['vocabulary_slug']))
 		{
-			$properties['vocabularyslug'] = \ICanBoogie\normalize($properties['vocabularyslug']);
+			$properties['vocabulary_slug'] = \ICanBoogie\normalize($properties['vocabulary_slug']);
 		}
 
 		$key = parent::save($properties, $key, $options);

@@ -22,7 +22,7 @@ class Vocabulary extends ActiveRecord implements ToSlug
 	const VOCABULARY_ID = 'vocabulary_id';
 	const SITE_ID = 'site_id';
 	const VOCABULARY = 'vocabulary';
-	const VOCABULARYSLUG = 'vocabularyslug';
+	const VOCABULARY_SLUG = 'vocabulary_slug';
 	const IS_TAGS = 'is_tags';
 	const IS_MULTIPLE = 'is_multiple';
 	const IS_REQUIRED = 'is_required';
@@ -58,7 +58,7 @@ class Vocabulary extends ActiveRecord implements ToSlug
 	 *
 	 * @var string
 	 */
-	public $vocabularyslug;
+	public $vocabulary_slug;
 
 	/**
 	 * Can terms be defined as coma-separated values ?
@@ -105,7 +105,7 @@ class Vocabulary extends ActiveRecord implements ToSlug
 
 	public function to_slug()
 	{
-		return $this->vocabularyslug;
+		return $this->vocabulary_slug;
 	}
 
 	/**

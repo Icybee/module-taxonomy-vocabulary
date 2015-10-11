@@ -18,7 +18,7 @@ return [
 				'vocabulary_id' => 'serial',
 				'site_id' => 'foreign',
 				'vocabulary' => 'varchar',
-				'vocabularyslug' => [ 'varchar', 80, 'indexed' => true ],
+				'vocabulary_slug' => [ 'varchar', 80, 'indexed' => true ],
 				'is_tags' => 'boolean',
 				'is_multiple' => 'boolean',
 				'is_required' => 'boolean',

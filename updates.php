@@ -30,6 +30,7 @@ class Update20150908 extends Update
 
 /**
  * - Renames column `vid` as `vocabulary_id`.
+ * - Renames column `vocabularyslug` as `vocabulary_slug`.
  *
  * @module taxonomy.vocabulary
  */
@@ -44,5 +45,12 @@ class Update20151011 extends Update
 		$this->module->model
 			->assert_has_column('vid')
 			->rename_column('vid', 'vocabulary_id');
+	}
+
+	public function update_column_vocabulary_slug()
+	{
+		$this->module->model
+			->assert_has_column('vocabularyslug')
+			->rename_column('vocabularyslug', 'vocabulary_slug');
 	}
 }
