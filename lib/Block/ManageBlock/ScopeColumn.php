@@ -1,17 +1,37 @@
 <?php
 
+/*
+ * This file is part of the Icybee package.
+ *
+ * (c) Olivier Laviale <olivier.laviale@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Icybee\Modules\Taxonomy\Vocabulary\Block\ManageBlock;
 
 use ICanBoogie\Module\Descriptor;
+
+use Brickrouge\A;
+
 use Icybee\Block\ManageBlock\Column;
+use Icybee\Modules\Taxonomy\Vocabulary\Vocabulary;
 
 /**
  * Representation of the `scope` column.
  */
 class ScopeColumn extends Column
 {
+	/**
+	 * @param Vocabulary $record
+	 *
+	 * @inheritdoc
+	 */
 	public function render_cell($record)
 	{
+		/* @var $app \ICanBoogie\Core|\ICanBoogie\Binding\Routing\CoreBindings|\ICanBoogie\Module\CoreBindings */
+
 		$app = \ICanBoogie\app();
 
 		$scope = $this->manager->module
@@ -22,13 +42,10 @@ class ScopeColumn extends Column
 
 		if ($scope)
 		{
-			$context = $app->site->path;
-			// TODO-20150310: use a route
 			foreach ($scope as &$constructor)
 			{
-				$constructor = '<a href="' . $context . '/admin/' . $constructor . '">'
-					. $this->t($app->modules->descriptors[$constructor][Descriptor::TITLE])
-					. '</a>';
+				$constructor = new A($this->t($app->modules->descriptors[$constructor][Descriptor::TITLE]),
+					$app->url_for("admin:$constructor:index"));
 			}
 
 			$last = array_pop($scope);
