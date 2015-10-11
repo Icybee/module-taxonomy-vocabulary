@@ -27,3 +27,22 @@ class Update20150908 extends Update
 			->rename_column('siteid', 'site_id');
 	}
 }
+
+/**
+ * - Renames column `vid` as `vocabulary_id`.
+ *
+ * @module taxonomy.vocabulary
+ */
+class Update20151011 extends Update
+{
+	public function update_column_vocabulary_id()
+	{
+		$this->module->models['scopes']
+			->assert_has_column('vid')
+			->rename_column('vid', 'vocabulary_id');
+
+		$this->module->model
+			->assert_has_column('vid')
+			->rename_column('vid', 'vocabulary_id');
+	}
+}

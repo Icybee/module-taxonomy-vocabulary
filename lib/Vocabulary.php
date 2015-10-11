@@ -13,12 +13,13 @@ namespace Icybee\Modules\Taxonomy\Vocabulary;
 
 use ICanBoogie\ActiveRecord;
 use ICanBoogie\Routing\ToSlug;
+use Icybee\Modules\Taxonomy\Terms\Term;
 
 class Vocabulary extends ActiveRecord implements ToSlug
 {
 	const MODEL_ID = 'taxonomy.vocabulary';
 
-	const VID = 'vid';
+	const VOCABULARY_ID = 'vocabulary_id';
 	const SITE_ID = 'site_id';
 	const VOCABULARY = 'vocabulary';
 	const VOCABULARYSLUG = 'vocabularyslug';
@@ -33,7 +34,7 @@ class Vocabulary extends ActiveRecord implements ToSlug
 	 *
 	 * @var int
 	 */
-	public $vid;
+	public $vocabulary_id;
 
 	/**
 	 * Identifier of the site the vocabulary is attached to.
@@ -53,7 +54,7 @@ class Vocabulary extends ActiveRecord implements ToSlug
 
 	/**
 	 * Version of the {@vocabulary} property that can be used in URLs. Written in lowercase, it
-	 * contains only unaccentuated letters, numbers and hyphens.
+	 * contains only unaccented letters, numbers and hyphens.
 	 *
 	 * @var string
 	 */
@@ -115,8 +116,10 @@ class Vocabulary extends ActiveRecord implements ToSlug
 	 */
 	protected function lazy_get_scope()
 	{
-		return $this->model->models['taxonomy.vocabulary/scopes']->select('constructor')
-		->filter_by_vid($this->vid)->all(\PDO::FETCH_COLUMN);
+		return $this->model->models['taxonomy.vocabulary/scopes']
+			->select('constructor')
+			->filter_by_vocabulary_id($this->vocabulary_id)
+			->all(\PDO::FETCH_COLUMN);
 	}
 
 	/**
@@ -128,7 +131,9 @@ class Vocabulary extends ActiveRecord implements ToSlug
 	{
 		$model = $this->model->models['taxonomy.terms'];
 
-		return $model->select('term.*')->filter_by_vid($this->vid)
-		->order('weight')->all(\PDO::FETCH_CLASS, 'Icybee\Modules\Taxonomy\Terms\Term', array($model));
+		return $model->select('term.*')
+			->filter_by_vocabulary_id($this->vocabulary_id)
+			->order('weight')
+			->all(\PDO::FETCH_CLASS, Term::class, [ $model ]);
 	}
 }

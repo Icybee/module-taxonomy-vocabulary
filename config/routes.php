@@ -7,7 +7,7 @@ use Icybee\Routing\RouteMaker as Make;
 
 return Make::admin('taxonomy.vocabulary', Routing\VocabularyAdminController::class, [
 
-	'id_name' => 'vid',
+	'id_name' => 'vocabulary_id',
 	'except' => 'config',
 	'actions' => [
 

@@ -28,7 +28,7 @@ class ScopeCriterion extends Criterion
 			->model
 			->models['taxonomy.vocabulary/scopes']
 			->select('constructor')
-			->where('{alias}.vid = vid');
+			->where('{alias}.vocabulary_id = vocabulary_id');
 
 		return $query->and("? IN($scope_query)", $value);
 	}

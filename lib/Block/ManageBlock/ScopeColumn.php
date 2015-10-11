@@ -14,9 +14,10 @@ class ScopeColumn extends Column
 	{
 		$app = \ICanBoogie\app();
 
-		$scope = $this->manager->module->model('scopes')
+		$scope = $this->manager->module
+			->model('scopes')
 			->select('constructor')
-			->where('vid = ?', $record->vid)
+			->where('vocabulary_id = ?', $record->vocabulary_id)
 			->all(\PDO::FETCH_COLUMN);
 
 		if ($scope)

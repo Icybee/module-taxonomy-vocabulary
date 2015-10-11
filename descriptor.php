@@ -15,7 +15,7 @@ return [
 
 			Model::SCHEMA => [
 
-				'vid' => 'serial',
+				'vocabulary_id' => 'serial',
 				'site_id' => 'foreign',
 				'vocabulary' => 'varchar',
 				'vocabularyslug' => [ 'varchar', 80, 'indexed' => true ],
@@ -39,7 +39,7 @@ return [
 			Model::CLASSNAME => 'ICanBoogie\ActiveRecord\Model',
 			Model::SCHEMA => [
 
-				'vid' => [ 'foreign', 'primary' => true ],
+				'vocabulary_id' => [ 'foreign', 'primary' => true ],
 				'constructor' => [ 'varchar', 64, 'primary' => true ]
 
 			]

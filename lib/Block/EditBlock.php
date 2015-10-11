@@ -134,11 +134,11 @@ class EditBlock extends \Icybee\Block\EditBlock
 		uasort($scope_options, 'ICanBoogie\unaccent_compare_ci');
 
 		$scope_value = null;
-		$vid = $this->values[Vocabulary::VID];
+		$vid = $this->values[Vocabulary::VOCABULARY_ID];
 
 		if ($vid)
 		{
-			$scope_value = $this->module->model('scopes')->select('constructor, 1')->filter_by_vid($vid)->pairs;
+			$scope_value = $this->module->model('scopes')->select('constructor, 1')->filter_by_vocabulary_id($vid)->pairs;
 
 			$this->values[Vocabulary::SCOPE] = $scope_value;
 		}

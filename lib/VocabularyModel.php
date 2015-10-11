@@ -38,7 +38,7 @@ class VocabularyModel extends Model
 
 		if (isset($properties['scope']))
 		{
-			$insert = $this->prepare('INSERT IGNORE INTO {self}__scopes (vid, constructor) VALUES(?, ?)');
+			$insert = $this->prepare('INSERT IGNORE INTO {self}__scopes (vocabulary_id, constructor) VALUES(?, ?)');
 
 			foreach ($properties['scope'] as $constructor => $ok)
 			{
@@ -58,7 +58,7 @@ class VocabularyModel extends Model
 		{
 			$scope = array_map(array($this, 'quote'), $scope);
 
-			$this->execute('DELETE FROM {self}__scopes WHERE vid = ? AND constructor NOT IN(' . implode(',', $scope) . ')', array($key));
+			$this->execute('DELETE FROM {self}__scopes WHERE vocabulary_id = ? AND constructor NOT IN(' . implode(',', $scope) . ')', array($key));
 		}
 
 		return $key;
@@ -70,7 +70,7 @@ class VocabularyModel extends Model
 
 		if ($rc)
 		{
-			$this->execute('DELETE FROM {self}__scopes WHERE vid = ?', array($key));
+			$this->execute('DELETE FROM {self}__scopes WHERE vocabulary_id = ?', array($key));
 			$this->clearTerms($key);
 		}
 
@@ -82,7 +82,7 @@ class VocabularyModel extends Model
 		// TODO: use model delete() method instead, maybe put an event on 'taxonomy.vocabulary.delete'
 
 		$model = $this->models['taxonomy.terms'];
-		$model->execute('DELETE FROM {self}__nodes WHERE (SELECT vid FROM {self} WHERE {self}__nodes.term_id = {self}.term_id) = ?', array($vid));
-		$model->execute('DELETE FROM {self} WHERE vid = ?', array($vid));
+		$model->execute('DELETE FROM {self}__nodes WHERE (SELECT vocabulary_id FROM {self} WHERE {self}__nodes.term_id = {self}.term_id) = ?', array($vid));
+		$model->execute('DELETE FROM {self} WHERE vocabulary_id = ?', array($vid));
 	}
 }

@@ -27,10 +27,10 @@ class VocabularyColumn extends Column
 	 */
 	public function render_cell($record)
 	{
-		$vid = $record->vid;
+		$vid = $record->vocabulary_id;
 		$terms = $record->model->models['taxonomy.terms']
 			->select('term')
-			->filter_by_vid($vid)
+			->filter_by_vocabulary_id($vid)
 			->order('term.weight, term')
 			->all(\PDO::FETCH_COLUMN);
 
@@ -44,7 +44,7 @@ class VocabularyColumn extends Column
 				? $this->t('Including: !list and !last', [ '!list' => \ICanBoogie\shorten(implode(', ', $terms), 128, 1), '!last' => $last ])
 				: $this->t('Including: !entry', [ '!entry' => $last ]);
 
-			$order_url = $this->app->url_for("admin:{$this->manager->module->id}:order", [ 'vid' => $vid ]);
+			$order_url = $this->app->url_for("admin:{$this->manager->module->id}:order", [ 'vocabulary_id' => $vid ]);
 
 			$order_link = <<<EOT
 <a href="$order_url">Order the terms</a>

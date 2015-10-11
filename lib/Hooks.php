@@ -92,7 +92,7 @@ class Hooks
 					$term_id_by_nid = $terms_model
 					->select('nid, term_id')
 					->join(':taxonomy.terms/nodes')
-					->filter_by_vid($vocabulary->vid)
+					->filter_by_vocabulary_id($vocabulary->vocabulary_id)
 					->all(\PDO::FETCH_GROUP | \PDO::FETCH_COLUMN);
 
 					#
@@ -140,7 +140,7 @@ class Hooks
 		$document->js->add(DIR . 'public/support.js');
 
 		$vocabularies = $app->models['taxonomy.vocabulary']
-		->join('INNER JOIN {self}__scopes USING(vid)')
+		->join('INNER JOIN {self}__scopes USING(vocabulary_id)')
 		->where('constructor = ? AND (site_id = 0 OR site_id = ?)', (string) $event->module, $app->site_id)
 		->order('weight')
 		->all;
@@ -152,26 +152,26 @@ class Hooks
 		$nodes_model = $app->models['taxonomy.terms/nodes'];
 
 		$nid = $event->key;
-		$identifier_base = 'vocabulary[vid]';
+		$identifier_base = 'vocabulary[vocabulary_id]';
 		$children = &$event->children;
 
 		foreach ($vocabularies as $vocabulary)
 		{
-			$vid = $vocabulary->vid;
+			$vocabulary_id = $vocabulary->vocabulary_id;
 
-			$identifier = $identifier_base . '[' . $vid . ']';
+			$identifier = $identifier_base . '[' . $vocabulary_id . ']';
 
 			if ($vocabulary->is_tags)
 			{
 				$options = $terms_model->select('term, count(nid)')
 					->join(':taxonomy.terms/nodes', [ 'mode' => 'LEFT' ])
-					->filter_by_vid($vid)
+					->filter_by_vocabulary_id($vocabulary_id)
 					->group('term')
 					->order('term')
 					->pairs;
 
 				$value = $nodes_model->select('term')
-					->filter_by_vid_and_nid($vid, $nid)
+					->filter_by_vocabulary_id_and_nid($vocabulary_id, $nid)
 					->order('term')
 					->all(\PDO::FETCH_COLUMN);
 
@@ -194,16 +194,24 @@ class Hooks
 			}
 			else
 			{
-				$options = $terms_model->select('term.term_id, term')->filter_by_vid($vid)->order('term')->pairs;
+				$options = $terms_model
+					->select('term.term_id, term')
+					->filter_by_vocabulary_id($vocabulary_id)
+					->order('term')
+					->pairs;
 
 				if (!$options)
 				{
 					//continue;
 				}
 
-				$value = $nodes_model->select('term_node.term_id')->filter_by_vid_and_nid($vid, $nid)->order('term')->rc;
+				$value = $nodes_model
+					->select('term_node.term_id')
+					->filter_by_vocabulary_id_and_nid($vocabulary_id, $nid)
+					->order('term')
+					->rc;
 
-				$edit_url = $app->site->path . '/admin/taxonomy.vocabulary/' . $vocabulary->vid . '/edit';
+				$edit_url = $app->site->path . '/admin/taxonomy.vocabulary/' . $vocabulary->vocabulary_id . '/edit';
 				$children[$identifier] = new Element
 				(
 					'select', array
@@ -244,7 +252,7 @@ class Hooks
 		}
 
 		$nid = $event->rc['key'];
-		$vocabularies = $vocabularies['vid'];
+		$vocabularies = $vocabularies['vocabulary_id'];
 
 		#
 		# on supprime toutes les liaisons pour cette node
@@ -284,7 +292,7 @@ class Hooks
 
 				foreach ($terms as $term)
 				{
-					$term_id = $terms_model->select('term_id')->where('vid = ? and term = ?', $vid, $term)->rc;
+					$term_id = $terms_model->select('term_id')->where('vocabulary_id = ? and term = ?', $vid, $term)->rc;
 
 					// FIXME-20090127: only users with 'create tags' permissions should be allowed to create tags
 
@@ -294,7 +302,7 @@ class Hooks
 						(
 							array
 							(
-								'vid' => $vid,
+								'vocabulary_id' => $vid,
 								'term' => $term
 							)
 						);

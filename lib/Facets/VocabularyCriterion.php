@@ -20,7 +20,7 @@ class VocabularyCriterion extends Criterion
 	{
 		if (is_numeric($value))
 		{
-			return $query->filter_by_vid($value);
+			return $query->filter_by_vocabulary_id($value);
 		}
 
 		return $query->filter_by_vocabularyslug($value);
