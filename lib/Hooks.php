@@ -12,6 +12,7 @@ use Brickrouge\Text;
 
 use Icybee\Modules\Pages\BreadcrumbElement;
 //use Icybee\Modules\Views\ActiveRecordProvider;
+use Icybee\Modules\Taxonomy\Terms\Term;
 use Icybee\Modules\Taxonomy\Vocabulary\Element\TagsPicker;
 use Icybee\Modules\Views\Collection as ViewsCollection;
 //use Icybee\Modules\Views\Provider;
@@ -21,7 +22,12 @@ class Hooks
 {
 	static private $vocabularies_cache;
 
-//	static public function get_term(\ICanBoogie\Prototyped\PropertyEvent $event, \Icybee\Modules\Nodes\Node $target)
+	/**
+	 * @param Node $target
+	 * @param string $property
+	 *
+	 * @return Term|null
+	 */
 	static public function get_term(\Icybee\Modules\Nodes\Node $target, $property)
 	{
 		$constructor = $target->constructor;
@@ -33,7 +39,7 @@ class Hooks
 
 			if ($vocabularies === false)
 			{
-				return;
+				return null;
 			}
 		}
 		else
@@ -48,7 +54,7 @@ class Hooks
 
 		if (!$vocabularies)
 		{
-			return;
+			return null;
 		}
 
 		/* @var $vocabulary Vocabulary */
@@ -72,7 +78,7 @@ class Hooks
 		#
 		if (!$vocabulary)
 		{
-			return;
+			return null;
 		}
 
 		$prototype = $target->prototype;
@@ -117,7 +123,7 @@ class Hooks
 				{
 					// TODO-20140921: is_required => create a fake "uncategorized" instance
 
-					return;
+					return null;
 				}
 
 				$terms = $terms_model->find($term_id_by_nid[$nid]);
@@ -361,6 +367,10 @@ class Hooks
 			$slice['label'] = preg_replace_callback('/\$\{term.([^\}]+)\}/', $replace, $slice['label']);
 		}
 	}
+
+	/*
+	 * Support
+	 */
 
 	/**
 	 * @return \ICanBoogie\Core|\Icybee\Binding\CoreBindings
