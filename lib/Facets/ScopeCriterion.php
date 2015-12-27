@@ -12,10 +12,10 @@
 namespace Icybee\Modules\Taxonomy\Vocabulary\Facets;
 
 use ICanBoogie\ActiveRecord;
-use ICanBoogie\Facets\Criterion;
 use ICanBoogie\ActiveRecord\Query;
+use ICanBoogie\Facets\Criterion\BasicCriterion;
 
-class ScopeCriterion extends Criterion
+class ScopeCriterion extends BasicCriterion
 {
 	public function alter_query_with_value(Query $query, $value)
 	{
