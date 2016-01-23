@@ -65,28 +65,41 @@ class Vocabulary extends ActiveRecord implements ToSlug
 	 *
 	 * @var bool
 	 */
-	public $is_tags;
+	public $is_tags = false;
 
 	/**
 	 * Can multiple terms be associated to a node ?
 	 *
 	 * @var bool
 	 */
-	public $is_multiple;
+	public $is_multiple = false;
 
 	/**
 	 * Is the vocabulary required for the associated scope ?
 	 *
 	 * @var bool
 	 */
-	public $is_required;
+	public $is_required = false;
 
 	/**
 	 * Weight of the vocabulary relative to other vocabulary.
 	 *
 	 * @var int
 	 */
-	public $weight;
+	public $weight = 0;
+
+	/**
+	 * @inheritdoc
+	 */
+	public function create_validation_rules()
+	{
+		return [
+
+			self::VOCABULARY => 'required',
+			self::VOCABULARY_SLUG => 'required',
+
+		];
+	}
 
 	/**
 	 * Removes the `scope` and `terms` properties.
