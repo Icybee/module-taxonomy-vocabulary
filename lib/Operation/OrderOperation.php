@@ -11,7 +11,7 @@
 
 namespace Icybee\Modules\Taxonomy\Vocabulary\Operation;
 
-use ICanBoogie\Errors;
+use ICanBoogie\ErrorCollection;
 use ICanBoogie\Operation;
 
 use Icybee\Binding\PrototypedBindings;
@@ -30,9 +30,17 @@ class OrderOperation extends Operation
 		+ parent::get_controls();
 	}
 
-	protected function validate(Errors $errors)
+	/**
+	 * @inheritdoc
+	 */
+	protected function validate(ErrorCollection $errors)
 	{
-		return !empty($this->request['terms']);
+		if (!$this->request['terms'])
+		{
+			$errors->add('terms');
+		}
+
+		return $errors;
 	}
 
 	protected function process()
