@@ -1,5 +1,11 @@
 # Vocabulary
 
+[![Packagist](https://img.shields.io/packagist/v/icybee/module-taxonomy-vocabulary.svg)](https://packagist.org/packages/icybee/module-taxonomy-vocabulary)
+[![Build Status](https://img.shields.io/travis/Icybee/module-taxonomy-vocabulary.svg)](http://travis-ci.org/Icybee/module-taxonomy-vocabulary)
+[![Code Quality](https://img.shields.io/scrutinizer/g/Icybee/module-taxonomy-vocabulary.svg)](https://scrutinizer-ci.com/g/Icybee/module-taxonomy-vocabulary)
+[![Code Coverage](https://img.shields.io/coveralls/Icybee/module-taxonomy-vocabulary.svg)](https://coveralls.io/r/Icybee/module-taxonomy-vocabulary)
+[![Downloads](https://img.shields.io/packagist/dt/icybee/module-taxonomy-vocabulary.svg)](https://packagist.org/packages/icybee/module-taxonomy-vocabulary/stats)
+
 The Vocabulary module allows nodes by to organized by vocabulary.
 
 
@@ -8,7 +14,7 @@ The Vocabulary module allows nodes by to organized by vocabulary.
 
 ## Requirement
 
-The package requires PHP 5.3 or later.
+The package requires PHP 5.4 or later.
 
 
 
@@ -19,15 +25,7 @@ The package requires PHP 5.3 or later.
 The recommended way to install this package is through [Composer](http://getcomposer.org/).
 Create a `composer.json` file and run `php composer.phar install` command to install it:
 
-```json
-{
-	"minimum-stability": "dev",
-	"require":
-	{
-		"icybee/module-taxonomy-vocabulary": "2.x"
-	}
-}
-```
+	$ composer require icybee/module-taxonomy-vocabulary
 
 
 
