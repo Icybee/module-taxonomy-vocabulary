@@ -14,7 +14,7 @@ The Vocabulary module allows nodes by to organized by vocabulary.
 
 ## Requirement
 
-The package requires PHP 5.4 or later.
+The package requires PHP 5.6 or later.
 
 
 
