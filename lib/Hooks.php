@@ -2,12 +2,13 @@
 
 namespace Icybee\Modules\Taxonomy\Vocabulary;
 
-use Brickrouge\Group;
+use function ICanBoogie\app;
 use ICanBoogie\Event;
 use ICanBoogie\I18n;
 
 use Brickrouge\Element;
 use Brickrouge\Form;
+use Brickrouge\Group;
 use Brickrouge\Text;
 
 use Icybee\Modules\Pages\BreadcrumbElement;
@@ -138,7 +139,7 @@ class Hooks
 
 	static public function on_nodes_editblock_alter_children(Event $event, \Icybee\Modules\Nodes\Block\EditBlock $block)
 	{
-		$app = self::app();
+		$app = app();
 
 		$document = $app->document;
 
@@ -366,17 +367,5 @@ class Hooks
 		{
 			$slice['label'] = preg_replace_callback('/\$\{term.([^\}]+)\}/', $replace, $slice['label']);
 		}
-	}
-
-	/*
-	 * Support
-	 */
-
-	/**
-	 * @return \ICanBoogie\Core|\Icybee\Binding\CoreBindings
-	 */
-	static private function app()
-	{
-		return \ICanBoogie\app();
 	}
 }

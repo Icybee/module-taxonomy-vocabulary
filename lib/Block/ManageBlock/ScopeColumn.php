@@ -11,6 +11,7 @@
 
 namespace Icybee\Modules\Taxonomy\Vocabulary\Block\ManageBlock;
 
+use function ICanBoogie\app;
 use ICanBoogie\Module\Descriptor;
 
 use Brickrouge\A;
@@ -30,9 +31,7 @@ class ScopeColumn extends Column
 	 */
 	public function render_cell($record)
 	{
-		/* @var $app \ICanBoogie\Core|\ICanBoogie\Binding\Routing\CoreBindings|\ICanBoogie\Module\CoreBindings */
-
-		$app = \ICanBoogie\app();
+		$app = app();
 
 		$scope = $this->manager->module
 			->model('scopes')
